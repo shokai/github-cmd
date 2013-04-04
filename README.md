@@ -17,10 +17,10 @@ Run
 
 show issues in your repos
 
-    % ruby github-issues.rb
-    % ruby github-issues.rb all
+    % ./github-issues
+    % ./github-issues all
 
 
 show assigned issues
 
-    % ruby github-issues-assigned.rb
+    % ./github-issues-assigned
