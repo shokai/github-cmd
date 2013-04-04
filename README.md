@@ -18,6 +18,7 @@ Run
 show issues in your repos
 
     % ruby github-issues.rb
+    % ruby github-issues.rb all
 
 
 show assigned issues

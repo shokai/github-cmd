@@ -2,6 +2,7 @@
 require 'rubygems'
 require 'bundler'
 Bundler.require
+require 'time'
 
 conf = Pit.get 'github.com', :require => {
   'login' => 'username on github.com',
@@ -21,6 +22,12 @@ repos = 1.upto(pages).map{|page|
 }.sort{|a,b|
   b.updated_at <=> a.updated_at
 }
+
+unless ARGV.include? 'all'
+  repos.delete_if do |repo|
+    Time.parse(repo.updated_at) < Time.now - 60*60*24*60
+  end
+end
 
 repos.each_with_index do |repo, i|
   puts "[#{i+1}/#{repos.size}] #{repo.html_url} (#{repo.open_issues_count} issues)"
