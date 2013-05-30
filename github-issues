@@ -32,7 +32,7 @@ end
 repos.each_with_index do |repo, i|
   puts "[#{i+1}/#{repos.size}] #{repo.html_url} (#{repo.open_issues_count} issues) [#{repo.updated_at}]"
   client.issues(repo.full_name).each do |i|
-    puts " - #{i.title}"
+    puts " - ##{i.number}\t#{i.title}"
   end
 end
 

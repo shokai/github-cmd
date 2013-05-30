@@ -13,5 +13,5 @@ issues = client.issues
 
 issues.each_with_index do |issue, i|
   puts "[#{i+1}/#{issues.size}] #{issue.html_url}"
-  puts " - #{issue.title}"
+  puts " - ##{issue.number}\t#{issue.title}"
 end
