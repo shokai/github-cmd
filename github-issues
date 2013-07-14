@@ -11,12 +11,12 @@ conf = Pit.get 'github.com', :require => {
 
 client = Octokit::Client.new :login => conf['login'], :password => conf['password']
 
-user = client.user
-pages = (user.public_repos + user.total_private_repos)/100 + 1
+user = client.user ARGV.shift
+pages = (user.public_repos + user.total_private_repos.to_i)/100 + 1
 
 repos = 1.upto(pages).map{|page|
   puts "reading page #{page}.."
-  client.repos('shokai', :per_page => 100, :page => page)
+  client.repos(user.login, :per_page => 100, :page => page)
 }.flatten.reject{|repo|
   repo.open_issues_count < 1
 }.sort{|a,b|
