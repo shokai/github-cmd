@@ -1,8 +1,26 @@
 #!/usr/bin/env ruby
 require 'rubygems'
+require 'args_parser'
 require 'octokit'
 require 'pit'
 require 'time'
+
+args = ArgsParser.parse ARGV do
+  arg :all, 'show all repos'
+  arg :day, 'filter by last modified at', :default => 90
+  arg :help, 'show help', :alias => :h
+end
+
+if args.has_option? :help
+  STDERR.puts "show issues on GitHub.com"
+  STDERR.puts args.help
+  STDERR.puts
+  STDERR.puts "e.g."
+  STDERR.puts "  github-issues"
+  STDERR.puts "  github-issues shokai"
+  STDERR.puts "  github-issues shokai --all"
+  exit
+end
 
 conf = Pit.get 'github.com', :require => {
   'login' => 'username on github.com',
@@ -11,7 +29,7 @@ conf = Pit.get 'github.com', :require => {
 
 client = Octokit::Client.new :login => conf['login'], :password => conf['password']
 
-user = client.user ARGV.shift
+user = client.user args.argv.shift
 pages = (user.public_repos + user.total_private_repos.to_i)/100 + 1
 
 repos = 1.upto(pages).map{|page|
@@ -23,7 +41,7 @@ repos = 1.upto(pages).map{|page|
   b.updated_at <=> a.updated_at
 }
 
-unless ARGV.include? 'all'
+unless args.has_option? :all
   repos.delete_if do |repo|
     Time.parse(repo.updated_at) < Time.now - 60*60*24*60
   end

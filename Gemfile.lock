@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     addressable (2.3.3)
+    args_parser (0.1.6)
     faraday (0.8.7)
       multipart-post (~> 1.1)
     faraday_middleware (0.9.0)
@@ -23,5 +24,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  args_parser
   octokit
   pit
