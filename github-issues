@@ -23,8 +23,8 @@ if args.has_option? :help
 end
 
 conf = Pit.get 'github.com', :require => {
-  'login' => 'username on github.com',
-  'password' => 'your-password'
+  'login' => 'YOUR_NAME',
+  'password' => 'YOUR_PASSWORD'
 }
 
 client = Octokit::Client.new :login => conf['login'], :password => conf['password']
