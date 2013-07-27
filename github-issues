@@ -37,7 +37,7 @@ users.each do |name|
   pages = (user.public_repos + user.total_private_repos.to_i)/100 + 1
 
   1.upto(pages).each do |page|
-    puts "reading github.com/#{name} page #{page}.."
+    puts "reading github.com/#{user.login} page #{page}.."
     client.
     repos(user.login, :per_page => 100, :page => page).
     reject{|repo|
