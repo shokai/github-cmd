@@ -38,9 +38,9 @@ users.each do |name|
 
   1.upto(pages).each do |page|
     print "reading github.com/#{user.login} page #{page} ... "
-    repos = client.repos(user.login, :per_page => 100, :page => page)
-    puts "#{repos.size} repos"
-    repos.reject{|repo|
+    repos_in_page = client.repos(user.login, :per_page => 100, :page => page)
+    puts "#{repos_in_page.size} repos"
+    repos_in_page.reject{|repo|
       repo.open_issues_count < 1
     }.each{|repo|
       repos.push repo
