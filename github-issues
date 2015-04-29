@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
-require 'rubygems'
 require 'args_parser'
+require 'highline/import'
 require 'octokit'
-require 'pit'
 require 'time'
 
 args = ArgsParser.parse ARGV do
   arg :all, 'show all repos'
   arg :day, 'filter by last modified at', :default => 90
+  arg :conf, 'config file', :default => "#{ENV['HOME']}/.github-cmd"
   arg :help, 'show help', :alias => :h
 end
 
@@ -22,16 +22,47 @@ if args.has_option? :help
   exit
 end
 
-conf = Pit.get 'github.com', :require => {
-  'login' => 'YOUR_NAME',
-  'password' => 'YOUR_PASSWORD'
-}
+token = File.open(args[:conf]).read.strip
 
-client = Octokit::Client.new :login => conf['login'], :password => conf['password']
+if token.empty?
+  login = ask("username: ")
+  exit 1 if login.empty?
+
+  password = ask("password: "){|q| q.echo = "*" }
+  exit 1 if password.empty?
+
+  client = Octokit::Client.new :login => login, :password => password
+
+  def client.get_oauth_token(one_time_password=nil)
+    args = {:scope => ["user"], :note => "github-cmd #{Time.now.to_i}"}
+    args[:headers] = { "X-GitHub-OTP" => one_time_password } if one_time_password
+    create_authorization args
+  end
+
+  res =
+    begin
+      client.get_oauth_token
+    rescue Octokit::OneTimePasswordRequired
+      puts "Two-Factor Auth required."
+      one_time_password = ask("onetime password: ")
+      client.get_oauth_token one_time_password
+    end
+  token = res[:token]
+  if token.empty?
+    STDERR.puts "token missing"
+    STDERR.puts res
+    exit 1
+  end
+
+  File.open args[:conf], "w+" do |f|
+    f.write token
+  end
+end
+
+
+client = Octokit::Client.new :access_token => token
 repos = []
-
 users = args.argv.empty? ? [nil] : args.argv.uniq
-
 users.each do |name|
   user = client.user name
   pages = (user.public_repos + user.total_private_repos.to_i)/100 + 1

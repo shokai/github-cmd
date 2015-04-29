@@ -1,14 +1,17 @@
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'octokit'
-require 'pit'
 
-conf = Pit.get 'github.com', :require => {
-  'login' => 'username on github.com',
-  'password' => 'your-password'
-}
+begin
+  token = File.open("#{ENV['HOME']}/.github-cmd").read.strip
+rescue
+  STDERR.puts "token not found"
+  STDERR.puts "run github-issues command"
+  exit 1
+end
 
-client = Octokit::Client.new :login => conf['login'], :password => conf['password']
+p token
+client = Octokit::Client.new :access_token => token
 issues = client.issues
 
 issues.each_with_index do |issue, i|
