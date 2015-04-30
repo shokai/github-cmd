@@ -4,10 +4,13 @@ require 'highline/import'
 require 'octokit'
 require 'time'
 
+app_dir = "#{ENV['HOME']}/.github-cmd"
+Dir.mkdir app_dir unless File.exists? app_dir
+
 args = ArgsParser.parse ARGV do
   arg :all, 'show all repos'
   arg :day, 'filter by last modified at', :default => 90
-  arg :conf, 'config file', :default => "#{ENV['HOME']}/.github-cmd"
+  arg :token, 'token file', :default => "#{app_dir}/token"
   arg :help, 'show help', :alias => :h
 end
 
@@ -22,7 +25,7 @@ if args.has_option? :help
   exit
 end
 
-token = File.open(args[:conf]).read.strip
+token = File.open(args[:token]).read.strip
 
 if token.empty?
   login = ask("username: ")
@@ -54,7 +57,7 @@ if token.empty?
     exit 1
   end
 
-  File.open args[:conf], "w+" do |f|
+  File.open args[:token], "w+" do |f|
     f.write token
   end
 end
