@@ -22,7 +22,11 @@ if args.has_option? :help
   exit
 end
 
-token = File.open(args[:conf]).read.strip
+if File.exists? args[:conf]
+  token = File.open(args[:conf]).read.strip
+else
+  token = ""
+end
 
 if token.empty?
   login = ask("username: ")
